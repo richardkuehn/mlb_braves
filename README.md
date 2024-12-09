@@ -73,7 +73,7 @@ Works with three tables in the SQLite database 'main':
 
 ## Data Analysis Findings
 
-When comparing the StatsAPI feed with the PITCHBYPITCH table, several interesting patterns emerged:
+When comparing the StatsAPI feed with the PITCHBYPITCH table, several interesting patterns (and potential solutions) emerged:
 
 1. **Data Discrepancies**
    - PITCHBYPITCH data only contained data on three pitchers (Jonny Venters, Luke Jackson, Shane Carle)
@@ -81,16 +81,16 @@ When comparing the StatsAPI feed with the PITCHBYPITCH table, several interestin
    - Luke Jackson's numbers are equal for games, doubles, triples, homeruns, and strikeouts. But it is 1 off for hits, 4 off for outs, and significantly off for balls and strikes
    - Carle Shane's numbers are off by 1 for games, 59 for batters_faced, 15 for pitches, 13 for outs, and a significant amount for balls and strikes.
 
-3. **Statistical Variations**
+2. **Statistical Variations**
    - outs/balls/strikes show systematic differences
    - PITCHBYPITCH has additional granularity with swing/take data
 
-5. **Audit System Recommendations**
-  - Implement automated daily comparisons of key metrics
-  - Track rate statistics for validation (K%, BB%, HR/9)
-  - Flag outliers in pitch counts and outcome distributions
-  - Monitor game-by-game alignment for complete coverage
-  - Create versioned snapshots for tracking data updates
+3. **Audit System Recommendations**
+   - Implement automated daily comparisons of key metrics
+   - Track rate statistics for validation (K%, BB%, HR/9)
+   - Flag outliers in pitch counts and outcome distributions
+   - Monitor game-by-game alignment for complete coverage
+   - Create versioned snapshots for tracking data updates
 
 The analysis suggests that while some core outcome data aligns well, there are systematic differences in how certain metrics are tracked or calculated between the API and main database.
 
