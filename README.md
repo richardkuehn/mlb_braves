@@ -4,6 +4,8 @@
 
 This repository contains two Jupyter notebooks that analyze baseball data for the Atlanta Braves using SQL queries and the MLB Stats API.
 
+***NOTE: This repository does not contain the SQLite database 'main'***
+
 ## Running the Code
 
 1. Install required packages:
@@ -79,7 +81,7 @@ When comparing the StatsAPI feed with the PITCHBYPITCH table, several interestin
    - PITCHBYPITCH data only contained data on three pitchers (Jonny Venters, Luke Jackson, Shane Carle)
    - Johnny Venter's numbers are missing the data from 22 games
    - Luke Jackson's numbers are equal for games, doubles, triples, homeruns, and strikeouts. But it is 1 off for hits, 4 off for outs, and significantly off for balls and strikes
-   - Carle Shane's numbers are off by 1 for games, 59 for batters_faced, 15 for pitches, 13 for outs, and a significant amount for balls and strikes.
+   - Carle Shane's numbers are off by 1 for games, 59 for batters_faced, 15 for pitches, 13 for outs, and significantly off for balls and strikes.
 
 2. **Statistical Variations**
    - outs/balls/strikes show systematic differences
