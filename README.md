@@ -1,81 +1,8 @@
 # Atlanta Braves - Data Developer Exercises
 #### Richard 'Ricky' Kuehn
 #### December 8th, 2024
+
 This repository contains two Jupyter notebooks that analyze baseball data for the Atlanta Braves using SQL queries and the MLB Stats API.
-
-## SQL Analysis (`rkuehn_braves_SQL.ipynb`)
-### Setup
-- Uses SQLite3 and pandas for data analysis
-- Connects to provided SQLite database 'main'
-- Works with three tables:
-  - WAR: Yearly batting WAR values (2000-2005)
-  - PERF: Aggregated stint-level pitching performance
-  - PITCHBYPITCH: Detailed pitch-level data
-
-### Queries
-
-1. **WAR Analysis (2002-2003)**
-   - Lists all batters that had a single season WAR greater than 3 during the 2002 or 2003 seasons
-   - Lists batters with combined WAR greater than 5 over those two seasons
-   - Results listed in descending order of their combined WAR for those seasons
-   - Uses CTE for readability and efficiency
-
-2. **Braves Pitchers WAR Classification (2018)**
-   - Returns every pitcher who threw at least one pitch for the Atlanta Braves in 2018
-   - Creates three 1/0 indicator columns for whether they reached:
-     - 1+ WAR cutoff
-     - 2+ WAR cutoff
-     - 3+ WAR cutoff
-   - Includes a fourth column for their total yearly WAR
-
-3. **Luke Jackson Pitch Analysis**
-   - Calculates plate appearances that reached a two-strike count but did NOT result in a strikeout
-   - Of those plate appearances, determines how many passed through:
-     - 0-2 count
-     - 1-2 count
-     - 2-2 count
-
-### Output Formats
-Each query is originally returned as a tuple, converted to a dataframe, and exported as a csv.
-
-
-## API Analysis (`rkuehn_braves_API.ipynb`)
-### Setup
-- Uses requests, pandas, and json libraries
-- Connects to MLB Stats API endpoint for 2018 Braves pitching stats
-- References local SQLite database for comparison
-
-### Features
-
-1. **Data Collection**
-   - Fetches pitching statistics from MLB Stats API
-   - Processes JSON response into pandas DataFrame
-   - Includes key stats like games, innings pitched, hits, strikeouts
-
-2. **Data Transformation**
-   - Aggregates pitch-by-pitch data at various levels
-   - Creates comparable metrics between API and local database
-   - Maintains consistent data types for analysis
-
-### Key Findings
-When comparing the StatsAPI feed with the PITCHBYPITCH table:
-
-1. **Data Coverage**
-   - PITCHBYPITCH table contains partial season data for selected pitchers
-   - API provides complete season statistics for all pitchers
-
-2. **Metric Alignment**
-   - Hit counts match between sources for tracked players
-   - Strikeout totals align within expected variance
-   - Pitch counts are consistently tracked
-
-3. **Potential Audit System**
-   - Could implement automated comparisons of key metrics
-   - Should track discrepancies in:
-     - Games pitched
-     - Total pitches
-     - Hit classifications
-     - Strikeout counts
 
 ## Running the Code
 
@@ -85,3 +12,90 @@ pip install pandas sqlite3 requests jupyter
 ```
 
 2. Ensure database file 'main' is in working directory
+
+## SQL Analysis (`rkuehn_braves_SQL.ipynb`)
+
+### Database Structure
+Works with three tables in the SQLite database 'main':
+- WAR: Yearly batting WAR values (2000-2005)
+- PERF: Aggregated stint-level pitching performance
+- PITCHBYPITCH: Detailed pitch-level data with flags for various outcomes
+
+### Implemented Queries
+
+1. **Historical WAR Analysis (2002-2003)**
+   - Lists batters with:
+     - Single season WAR > 3 in 2002 or 2003
+     - Combined WAR > 5 across both seasons
+   - Uses Common Table Expression (CTE) for data aggregation
+   - Results sorted by descending combined WAR
+   - Outputs player name, individual year WARs, and combined WAR
+
+2. **2018 Braves Pitchers WAR Classification**
+   - Identifies all pitchers who threw for Atlanta in 2018
+   - Creates binary indicators for WAR thresholds:
+     - 1+ WAR
+     - 2+ WAR
+     - 3+ WAR
+   - Includes actual WAR value
+   - Filters for MLB-level appearances only
+
+3. **Luke Jackson Pitch Sequence Analysis**
+   - Analyzes two-strike counts that didn't result in strikeouts
+   - Tracks progression through specific counts:
+     - 0-2 count instances
+     - 1-2 count instances
+     - 2-2 count instances
+   - Uses subqueries to maintain pitch sequence integrity
+
+## API Analysis (`rkuehn_braves_API.ipynb`)
+
+### Data Collection
+- Fetches 2018 Braves pitching statistics from MLB Stats API endpoint
+- Processes JSON response into structured DataFrame
+- Creates normalized dataset for comparison with local database
+
+### Data Processing Steps
+1. Initial API data retrieval and JSON parsing
+2. DataFrame construction with consistent column naming
+3. Calculation of derived statistics (e.g., balls from total pitches minus strikes)
+4. Aggregation of pitch-by-pitch data at player and game levels
+5. Creation of comparable metrics between data sources
+
+### Key Metrics Tracked
+- Games played
+- Batters faced
+- Total pitches
+- Hit outcomes (singles, doubles, triples, home runs)
+- Strikeouts
+- Balls/strikes counts
+- Pitch outcomes (swings/takes)
+
+## Data Analysis Findings
+
+When comparing the StatsAPI feed with the PITCHBYPITCH table, several interesting patterns emerged:
+
+1. **Data Discrepancies**
+   - PITCHBYPITCH data only contained data on three pitchers (Jonny Venters, Luke Jackson, Shane Carle)
+   - Johnny Venter's numbers are missing the data from 22 games
+   - Luke Jackson's numbers are equal for games, doubles, triples, homeruns, and strikeouts. But it is 1 off for hits, 4 off for outs, and significantly off for balls and strikes
+   - Carle Shane's numbers are off by 1 for games, 59 for batters_faced, 15 for pitches, 13 for outs, and a significant amount for balls and strikes.
+
+3. **Statistical Variations**
+   - outs/balls/strikes show systematic differences
+   - PITCHBYPITCH has additional granularity with swing/take data
+
+5. **Audit System Recommendations**
+  - Implement automated daily comparisons of key metrics
+  - Track rate statistics for validation (K%, BB%, HR/9)
+  - Flag outliers in pitch counts and outcome distributions
+  - Monitor game-by-game alignment for complete coverage
+  - Create versioned snapshots for tracking data updates
+
+The analysis suggests that while some core outcome data aligns well, there are systematic differences in how certain metrics are tracked or calculated between the API and main database.
+
+## Output Files
+
+Each analysis generates CSV files for further processing:
+- SQL Analysis: q1.csv, q2.csv, q3.csv
+- API Analysis: raw_api_data.csv, cleaned_api_data.csv, cleaned_main_data.csv
